@@ -55,10 +55,6 @@ void Get_status(){
   }
 }
 
-int CekMakanan(){
-  
-}
-
 void Makan(){
   myservo.write(180);
   delay(2000);
@@ -83,18 +79,14 @@ void handleNewMessages(int numNewMessages){
 
       if (text == "/menu"){
         String welcome = "Selamat datang Di Fish Feeder Automatic, " + from_name + ".\n";
-        welcome =+ "/makan : Untuk memberi makan\n";
-        welcome =+ "/cek : Untuk memberi makan\n";
-        welcome =+ "/makan : Untuk memberi makan\n";
+        welcome += "/makan : Untuk memberi makan\n";
+        welcome += "/cek : Untuk memberi makan\n";
+        welcome += "/makan : Untuk memberi makan\n";
         bot.sendMessage(chat_id, welcome);
       }
       
       if (text == "/cek"){
-        String welcome = "Selamat datang Di Fish Feeder Automatic, " + from_name + ".\n";
-        welcome =+ "/makan : Untuk memberi makan\n";
-        welcome =+ "/cek : Untuk memberi makan\n";
-        welcome =+ "/makan : Untuk memberi makan\n";
-        bot.sendMessage(chat_id, welcome);
+        bot.sendMessage(chat_id, "Pakan anda tersisa : " + String(int(persentase)) + "%");
       }
   }
   }
