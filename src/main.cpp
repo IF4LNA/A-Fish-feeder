@@ -55,7 +55,7 @@ void Get_status(){
   }
 }
 
-void CekMakanan(){
+int CekMakanan(){
   
 }
 
