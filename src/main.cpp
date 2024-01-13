@@ -81,7 +81,6 @@ void handleNewMessages(int numNewMessages){
         String welcome = "Selamat datang Di Fish Feeder Automatic, " + from_name + ".\n";
         welcome += "/makan : Untuk memberi makan\n";
         welcome += "/cek : Untuk memberi makan\n";
-        welcome += "/makan : Untuk memberi makan\n";
         bot.sendMessage(chat_id, welcome);
       }
       
