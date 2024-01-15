@@ -1,65 +1,11 @@
 #include <Arduino.h>
-#include <ESP32Servo.h>
 #include <WiFi.h>
-#include <WiFiClientSecure.h>
-#include <UniversalTelegramBot.h>
-
-Servo myservo;
-#define servoPin 18
-
-#define echo 14
-#define trigh 12
+#include <TeleBot.h>
 
 // Wifi network station credentials
 #define WIFI_SSID "IFALNA"
 #define WIFI_PASSWORD "Beruang123"
-// Telegram BOT Token (Get from Botfather)
-#define BOT_TOKEN "6525571173:AAF3ZNtvxFwuo293fzKryjCEZXV6mmOnm7c"
-#define CHATID "1348547429"
 
-const unsigned long BOT_MTBS = 100; // mean time between scan messages
-
-WiFiClientSecure secured_client;
-UniversalTelegramBot bot(BOT_TOKEN, secured_client);
-unsigned long bot_lasttime;
-bool Start = false;
-
-long timer;
-float persentase;
-int jarak;
-#define max 13
-
-void Get_status(){
-  digitalWrite(trigh, LOW);                   
-  delayMicroseconds(2);
-  digitalWrite(trigh, HIGH);                  
-  delayMicroseconds(10);
-  digitalWrite(trigh, LOW);                   
-
-  timer = pulseIn(echo, HIGH);
-  jarak = timer/58;
-  persentase = (max-jarak);
-  persentase /= max;
-  persentase *= 100;
-  delay(100);
-  Serial.print("Jarak = ");
-  Serial.print(jarak);
-  Serial.print(" cm : ");
-  Serial.print(persentase);
-  Serial.print("%\n");
-  if(persentase <= 20){
-    bot.sendMessage(CHATID, "❗Pakan anda tersisa : " + String(int(persentase)) + "%");
-    digitalWrite(27, HIGH);
-  }else{
-    digitalWrite(27, LOW);
-  }
-}
-
-void Makan(){
-  myservo.write(180);
-  delay(2000);
-  myservo.write(0);
-}
 void handleNewMessages(int numNewMessages){
   for (int i = 0; i < numNewMessages; i++){
     String chat_id = bot.messages[i].chat_id;
@@ -69,7 +15,7 @@ void handleNewMessages(int numNewMessages){
     if (from_name == "")
       from_name = "Guest";
 
-    if (chat_id == CHATID){
+    if ((chat_id == CHATID) or (chat_id == CHATID2)){
       if (text == "/makan"){
         bot.sendChatAction(chat_id, "typing");
         bot.sendMessage(chat_id, "Memberi Makan");
@@ -104,8 +50,8 @@ void SetupServo(){
 void setup() {
   Serial.begin(115200);
   Serial.println();
-  pinMode(27, OUTPUT);
-  digitalWrite(27, LOW);
+  pinMode(19, OUTPUT);
+  digitalWrite(19, LOW);
 
   // attempt to connect to Wifi network:
   Serial.print("Connecting to Wifi SSID ");
