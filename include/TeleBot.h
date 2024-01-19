@@ -6,6 +6,7 @@
 
 Servo myservo;
 #define servoPin 18
+int8_t last[2];
 
 #define echo 14
 #define trigh 12
@@ -135,9 +136,16 @@ void CekWaktuMakan(){
     time(&now);
     localtime_r(&now, &timeinfo);
     for(int x=0 ; x<=2 ; x++){
-      if(((String((timeinfo.tm_hour < 10 ? "0" : "")) + String(timeinfo.tm_hour) + ":"
-        + String((timeinfo.tm_min < 10 ? "0" : "")) + String(timeinfo.tm_min))
-            == JadwalMakan[x]) && last != timeinfo.tm_min
+      if(
+          (
+            (
+              String((timeinfo.tm_hour < 10 ? "0" : "")) + String(timeinfo.tm_hour) + ":"
+            + String((timeinfo.tm_min < 10 ? "0" : "")) + String(timeinfo.tm_min) + ":"
+            + String((timeinfo.tm_sec < 10 ? "0" : "")) + String(timeinfo.tm_sec)
+            )
+
+            == JadwalMakan[x]
+          )
       ){Makan();} 
     }
 }

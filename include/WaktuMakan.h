@@ -1,6 +1,6 @@
 #include <time.h>
 
-String JadwalMakan[2] = {"00:00", "00:00"};
+String JadwalMakan[2] = {"00:00:00", "00:00:00"};
 
 void SetupMakan(){
     configTime(7 * 3600, 0, "id.pool.ntp.org");
@@ -21,7 +21,8 @@ bool UpdateWaktuMakan(int8_t idx, const char * waktu){
     } else {
         JadwalMakan[idx] = 
             String((targetTime.tm_hour < 10 ? "0" : "")) + String(targetTime.tm_hour) + ":"
-            + String((targetTime.tm_min < 10 ? "0" : "")) + String(targetTime.tm_min);
+            + String((targetTime.tm_hour < 10 ? "0" : "")) + String(targetTime.tm_hour) + ":"
+            + String((targetTime.tm_sec < 10 ? "0" : "")) + String(targetTime.tm_sec);
         return true;
     }
 }
