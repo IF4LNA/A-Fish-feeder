@@ -6,47 +6,6 @@
 #define WIFI_SSID "IFALNA"
 #define WIFI_PASSWORD "Beruang123"
 
-void handleNewMessages(int numNewMessages){
-  for (int i = 0; i < numNewMessages; i++){
-    String chat_id = bot.messages[i].chat_id;
-    String text = bot.messages[i].text;
-
-    String from_name = bot.messages[i].from_name;
-    if (from_name == "")
-      from_name = "Guest";
-
-    if ((chat_id == CHATID) or (chat_id == CHATID2)){
-      if (text == "/makan"){
-        bot.sendChatAction(chat_id, "typing");
-        bot.sendMessage(chat_id, "Memberi Makan");
-        Makan();
-        bot.sendMessage(chat_id, "Sudah Diberi makan");
-      }
-
-      if (text == "/menu"){
-        String welcome = "Selamat datang Di Fish Feeder Automatic, " + from_name + ".\n";
-        welcome += "/makan : Untuk memberi makan\n";
-        welcome += "/cek : Untuk memberi makan\n";
-        bot.sendMessage(chat_id, welcome);
-      }
-      
-      if (text == "/cek"){
-        bot.sendMessage(chat_id, "Pakan anda tersisa : " + String(int(persentase)) + "%");
-      }
-  }
-  }
-}
-
-void SetupServo(){
-	// Setup Servo
-	ESP32PWM::allocateTimer(0);
-	ESP32PWM::allocateTimer(1);
-	ESP32PWM::allocateTimer(2);
-	ESP32PWM::allocateTimer(3);
-	myservo.setPeriodHertz(50);
-	myservo.attach(servoPin, 0, 4000);
-  myservo.write(0);
-}
 void setup() {
   Serial.begin(115200);
   Serial.println();
@@ -82,18 +41,7 @@ void setup() {
 }
 
 void loop() {
-  Get_status();
-   if (millis() - bot_lasttime > BOT_MTBS)
-  {
-    int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
-
-    while (numNewMessages)
-    {
-      Serial.println("got response");
-      handleNewMessages(numNewMessages);
-      numNewMessages = bot.getUpdates(bot.last_message_received + 1);
-    }
-
-    bot_lasttime = millis();
-  }
+  //Get_status();
+  HandleBot();
+  delay(100);
 }
