@@ -3,8 +3,8 @@
 #include <TeleBot.h>
 
 // Wifi network station credentials
-#define WIFI_SSID "IFALNA"
-#define WIFI_PASSWORD "Beruang123"
+#define WIFI_SSID "realme C25s"
+#define WIFI_PASSWORD "code787898"
 
 void setup() {
   Serial.begin(115200);

@@ -21,7 +21,7 @@ bool UpdateWaktuMakan(int8_t idx, const char * waktu){
     } else {
         JadwalMakan[idx] = 
             String((targetTime.tm_hour < 10 ? "0" : "")) + String(targetTime.tm_hour) + ":"
-            + String((targetTime.tm_hour < 10 ? "0" : "")) + String(targetTime.tm_hour) + ":"
+            + String((targetTime.tm_min < 10 ? "0" : "")) + String(targetTime.tm_min) + ":"
             + String((targetTime.tm_sec < 10 ? "0" : "")) + String(targetTime.tm_sec);
         return true;
     }

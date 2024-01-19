@@ -3,6 +3,7 @@
 #include <ESP32Servo.h>
 #include <WaktuMakan.h>
 #include <cstdint>
+#include <string>
 
 Servo myservo;
 #define servoPin 18
@@ -60,7 +61,7 @@ void SetupServo(){
 	ESP32PWM::allocateTimer(1);
 	ESP32PWM::allocateTimer(3);
 	myservo.setPeriodHertz(60);    // standard 60 hz servo
-	myservo.attach(13, 500, 2400);
+	myservo.attach(18, 500, 2400);
   myservo.write(0);
 }
 
@@ -130,24 +131,30 @@ void handleNewMessages(int numNewMessages){
   }
 }
 
+String timeOn, timeStack, timeSet;
 void CekWaktuMakan(){
     time_t now;
     struct tm timeinfo;
     time(&now);
     localtime_r(&now, &timeinfo);
-    for(int x=0 ; x<=2 ; x++){
-      if(
-          (
-            (
-              String((timeinfo.tm_hour < 10 ? "0" : "")) + String(timeinfo.tm_hour) + ":"
-            + String((timeinfo.tm_min < 10 ? "0" : "")) + String(timeinfo.tm_min) + ":"
-            + String((timeinfo.tm_sec < 10 ? "0" : "")) + String(timeinfo.tm_sec)
-            )
 
-            == JadwalMakan[x]
-          )
-      ){Makan();} 
+    timeOn = (
+            String((timeinfo.tm_hour < 10 ? "0" : "")) + String(timeinfo.tm_hour) + ":"
+          + String((timeinfo.tm_min < 10 ? "0" : "")) + String(timeinfo.tm_min) + ":"
+          + String((timeinfo.tm_sec < 10 ? "0" : "")) + String(timeinfo.tm_sec)
+          );
+    timeStack = (
+            String((timeinfo.tm_hour < 10 ? "0" : "")) + String(timeinfo.tm_hour) + ":"
+          + String((timeinfo.tm_min < 10 ? "0" : "")) + String(timeinfo.tm_min) + ":"
+          + String((timeinfo.tm_sec+10 < 10 ? "0" : "")) + String(timeinfo.tm_sec+10)
+          );
+
+    for(int x=0 ; x<=2 ; x++){
+      if(timeOn <= JadwalMakan[x] && JadwalMakan[x] <= timeStack){
+        Makan();
+      } 
     }
+    
 }
 
 void HandleBot(){
