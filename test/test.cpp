@@ -38,11 +38,10 @@ void setup() {
   pinMode(echo, INPUT);
   pinMode(trigh, OUTPUT);
   SetupServo();
-  SetupMakan();
 }
 
 void loop() {
-  Get_status();
+  //Get_status();
   HandleBot();
   delay(100);
 }

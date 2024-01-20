@@ -14,8 +14,8 @@ int8_t last[2];
 
 // Telegram BOT Token (Get from Botfather)
 #define BOT_TOKEN "6525571173:AAF3ZNtvxFwuo293fzKryjCEZXV6mmOnm7c"
-#define CHATID "1348547429"
-#define CHATID2 "6909375322"
+#define CHATID "6762920775"//"1348547429"
+#define CHATID2 "6762920775"//"6909375322"
 
 const unsigned long BOT_MTBS = 100; // mean time between scan messages
 
@@ -26,10 +26,16 @@ bool Start = false;
 
 long timer;
 float persentase;
-int jarak;
+// last notif berfungsi untuk metimpan waktu terakhir notif sisa makanan
+int jarak, last_notif = 0;
 #define max 13 //max tinggi tanki
 
 void Get_status(){
+  time_t now;
+    struct tm timeinfo;
+    time(&now);
+    localtime_r(&now, &timeinfo);
+
   digitalWrite(trigh, LOW);                   
   delayMicroseconds(2);
   digitalWrite(trigh, HIGH);                  
@@ -48,9 +54,16 @@ void Get_status(){
   Serial.print(persentase);
   Serial.print("%\n");
   if(persentase <= 20){
-    bot.sendMessage(CHATID, "❗Pakan anda tersisa : " + String(int(persentase)) + "%");
-    bot.sendMessage(CHATID2, "❗Pakan anda tersisa : " + String(int(persentase)) + "%");
-    digitalWrite(19, HIGH);
+    if(last_notif == timeinfo.tm_min){
+      bot.sendMessage(CHATID, "❗Pakan anda tersisa : " + String(int(persentase)) + "%");
+      //bot.sendMessage(CHATID2, "❗Pakan anda tersisa : " + String(int(persentase)) + "%");
+      digitalWrite(19, HIGH);
+    }
+    if (last_notif == 59){
+      last_notif = 1;
+    }else{
+      last_notif = timeinfo.tm_min + 1;
+    }
   }else{
     digitalWrite(19, LOW);
   }
@@ -71,6 +84,12 @@ void Makan(){
   myservo.write(0);
 }
 
+void infoJadwal(String ID){
+  bot.sendMessage(ID,
+    "Jadwal Makan:\nJadwal 1 : " + JadwalMakan[0] + "\n" +
+    "Jadwal 2 : " + JadwalMakan[1]
+  );
+}
 void handleNewMessages(int numNewMessages){
   for (int i = 0; i < numNewMessages; i++){
     String chat_id = bot.messages[i].chat_id;
@@ -98,17 +117,14 @@ void handleNewMessages(int numNewMessages){
       Jadwal
       */
         bot.sendMessage(chat_id, "Pakan anda tersisa : " + String(int(persentase)) + "%");
-        bot.sendMessage(chat_id, "Jadwal Makan : ");
+        infoJadwal(chat_id);
       }
 
     if(text.substring(0,2) == "J1"){
       text += ":00";
       if(UpdateWaktuMakan(0, text.substring(2).c_str())){
         bot.sendMessage(chat_id, "Waktu 1 berhasil di Atur");
-        bot.sendMessage(chat_id,
-          "Jadwal 1 : " + JadwalMakan[0] + "\n" +
-          "Jadwal 2 : " + JadwalMakan[1]
-        );
+        infoJadwal(chat_id);
       }else{
         bot.sendMessage(chat_id, "Format waktu salah");
       }
@@ -118,10 +134,7 @@ void handleNewMessages(int numNewMessages){
       text += ":00";
       if(UpdateWaktuMakan(1, text.substring(2).c_str())){
         bot.sendMessage(chat_id, "Waktu 2 berhasil di Atur");
-        bot.sendMessage(chat_id,
-          "Jadwal 1 : " + JadwalMakan[0] + "\n" +
-          "Jadwal 2 : " + JadwalMakan[1]
-        );
+        infoJadwal(chat_id);
       }else{
         bot.sendMessage(chat_id, "Format waktu salah");
       }
@@ -131,7 +144,7 @@ void handleNewMessages(int numNewMessages){
   }
 }
 
-String timeOn, timeStack, timeSet;
+String timeOn, timeSec;
 void CekWaktuMakan(){
     time_t now;
     struct tm timeinfo;
@@ -143,16 +156,32 @@ void CekWaktuMakan(){
           + String((timeinfo.tm_min < 10 ? "0" : "")) + String(timeinfo.tm_min) + ":"
           + String((timeinfo.tm_sec < 10 ? "0" : "")) + String(timeinfo.tm_sec)
           );
-    timeStack = (
+    now += 5;
+    localtime_r(&now, &timeinfo);
+    timeSec = (
             String((timeinfo.tm_hour < 10 ? "0" : "")) + String(timeinfo.tm_hour) + ":"
           + String((timeinfo.tm_min < 10 ? "0" : "")) + String(timeinfo.tm_min) + ":"
-          + String((timeinfo.tm_sec+10 < 10 ? "0" : "")) + String(timeinfo.tm_sec+10)
+          + String((timeinfo.tm_sec < 10 ? "0" : "")) + String(timeinfo.tm_sec)
           );
 
-    for(int x=0 ; x<=2 ; x++){
-      if(timeOn <= JadwalMakan[x] && JadwalMakan[x] <= timeStack){
+    delay(500);
+
+    if(
+      timeOn < JadwalMakan[0]&&
+      JadwalMakan[0] < timeSec
+    ){
+        bot.sendMessage(CHATID, "Memberi Makan");
         Makan();
-      } 
+        bot.sendMessage(CHATID, "Sudah Diberi makan");
+    }
+
+    if(
+      timeOn < JadwalMakan[1]&&
+      JadwalMakan[1] < timeSec
+    ){
+        bot.sendMessage(CHATID, "Memberi Makan");
+        Makan();
+        bot.sendMessage(CHATID, "Sudah Diberi makan");
     }
     
 }
@@ -169,4 +198,5 @@ void HandleBot(){
       bot_lasttime = millis();
   }
   CekWaktuMakan();
+  Get_status();
 }
