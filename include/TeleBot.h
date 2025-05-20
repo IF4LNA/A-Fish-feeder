@@ -26,7 +26,7 @@ bool Start = false;
 
 long timer;
 float persentase;
-// last notif berfungsi untuk metimpan waktu terakhir notif sisa makanan
+// last notif berfungsi untuk metimpan waktu terakhir notif sisa makanan tes
 int jarak, last_notif = 0;
 #define max 13 //max tinggi tanki
 
